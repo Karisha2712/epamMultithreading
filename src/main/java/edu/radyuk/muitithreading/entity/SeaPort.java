@@ -15,15 +15,15 @@ public class SeaPort {
     private static final ReentrantLock lock = new ReentrantLock();
     private static final AtomicBoolean created = new AtomicBoolean(false);
     private static final int STORAGE_CAPACITY = 1000;
-    private static final int PIER_NUMBER = 5;
+    private static final int PIER_NUMBER = 3;
     private static SeaPort instance;
-    private ReentrantLock storageLock = new ReentrantLock(true);
-    private ReentrantLock pierLock = new ReentrantLock(true);
-    private Condition pierCondition = pierLock.newCondition();
-    private Condition loadAvailable = storageLock.newCondition();
-    private Deque<Pier> freePiers;
-    private Deque<Pier> busyPiers;
-    private int currentContainerNumber;
+    private final ReentrantLock storageLock = new ReentrantLock(true);
+    private final ReentrantLock pierLock = new ReentrantLock(true);
+    private final Condition pierCondition = pierLock.newCondition();
+    private final Condition loadAvailable = storageLock.newCondition();
+    private final Deque<Pier> freePiers;
+    private final Deque<Pier> busyPiers;
+    private int currentContainerNumber = 500;
 
     private SeaPort() {
         freePiers = new ArrayDeque<>();
@@ -56,7 +56,7 @@ public class SeaPort {
                     pierCondition.await();
                 }
             } catch (InterruptedException e) {
-                logger.log(Level.ERROR, "Error while pier obtaining");
+                logger.log(Level.ERROR, "Error while pier obtaining ", e);
                 Thread.currentThread().interrupt();
             }
             Pier pier = freePiers.removeLast();
@@ -86,7 +86,7 @@ public class SeaPort {
                     loadAvailable.await();
                 }
             } catch (InterruptedException e) {
-                logger.log(Level.ERROR, "Error while storage loading");
+                logger.log(Level.ERROR, "Error while storage loading ", e);
                 Thread.currentThread().interrupt();
             }
             currentContainerNumber++;
@@ -103,7 +103,7 @@ public class SeaPort {
                     loadAvailable.await();
                 }
             } catch (InterruptedException e) {
-                logger.log(Level.ERROR, "Error while storage loading");
+                logger.log(Level.ERROR, "Error while storage loading ", e);
                 Thread.currentThread().interrupt();
             }
             currentContainerNumber--;

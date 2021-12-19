@@ -8,51 +8,33 @@ import org.apache.logging.log4j.Logger;
 public class Ship implements Runnable {
     private static final Logger logger = LogManager.getLogger();
     private final int shipId;
-    private final int capacity;
     private final TaskType taskType;
-    private int containersNumber;
     private TaskState taskState;
 
-    public Ship(int capacity, int containersNumber, TaskType taskType) {
-        this.capacity = capacity;
-        this.containersNumber = containersNumber;
+    public Ship(TaskType taskType) {
         this.shipId = ShipIdGenerator.generateId();
         this.taskType = taskType;
         this.taskState = TaskState.BEFORE_START;
     }
 
-    public enum TaskType {
-        LOAD, UNLOAD
-    }
-
-    public enum TaskState {
-        BEFORE_START, IN_PROGRESS, COMPLETE
-    }
-
     @Override
     public void run() {
         this.taskState = TaskState.IN_PROGRESS;
-        logger.log(Level.INFO, "");
+        logger.log(Level.INFO, "Ship {} runs", shipId);
+        SeaPort seaPort = SeaPort.getInstance();
+        Pier pier = seaPort.obtainPier();
+        pier.processShip(this);
+        seaPort.releasePier(pier);
+        this.taskState = TaskState.COMPLETE;
+        logger.log(Level.INFO, "Ship {} processing is completed", shipId);
     }
 
     public int getShipId() {
         return shipId;
     }
 
-    public int getCapacity() {
-        return capacity;
-    }
-
     public TaskType getTaskType() {
         return taskType;
-    }
-
-    public int getContainersNumber() {
-        return containersNumber;
-    }
-
-    public void setContainersNumber(int containersNumber) {
-        this.containersNumber = containersNumber;
     }
 
     public TaskState getTaskState() {
@@ -68,23 +50,29 @@ public class Ship implements Runnable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Ship ship = (Ship) o;
-        return capacity == ship.capacity;
+        return taskType == ship.taskType;
     }
 
     @Override
     public int hashCode() {
-        return capacity;
+        return taskType.hashCode();
     }
 
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("Ship{");
         sb.append("shipId=").append(shipId);
-        sb.append(", capacity=").append(capacity);
         sb.append(", taskType=").append(taskType);
-        sb.append(", containersNumber=").append(containersNumber);
         sb.append(", taskState=").append(taskState);
         sb.append('}');
         return sb.toString();
+    }
+
+    public enum TaskType {
+        LOAD, UNLOAD
+    }
+
+    public enum TaskState {
+        BEFORE_START, IN_PROGRESS, COMPLETE
     }
 }
