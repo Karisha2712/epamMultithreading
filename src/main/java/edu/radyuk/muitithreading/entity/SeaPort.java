@@ -21,9 +21,10 @@ public class SeaPort {
     private final ReentrantLock pierLock = new ReentrantLock(true);
     private final Condition pierCondition = pierLock.newCondition();
     private final Condition loadAvailable = storageLock.newCondition();
+    private final Condition unloadAvailable = storageLock.newCondition();
     private final Deque<Pier> freePiers;
     private final Deque<Pier> busyPiers;
-    private int currentContainerNumber = 500;
+    private int currentContainerNumber = 0;
 
     private SeaPort() {
         freePiers = new ArrayDeque<>();
@@ -90,6 +91,7 @@ public class SeaPort {
                 Thread.currentThread().interrupt();
             }
             currentContainerNumber++;
+            unloadAvailable.signal();
         } finally {
             storageLock.unlock();
         }
@@ -100,13 +102,14 @@ public class SeaPort {
             storageLock.lock();
             try {
                 while (currentContainerNumber == 0) {
-                    loadAvailable.await();
+                    unloadAvailable.await();
                 }
             } catch (InterruptedException e) {
                 logger.log(Level.ERROR, "Error while storage loading ", e);
                 Thread.currentThread().interrupt();
             }
             currentContainerNumber--;
+            loadAvailable.signal();
         } finally {
             storageLock.unlock();
         }
