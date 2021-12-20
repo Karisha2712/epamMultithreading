@@ -10,7 +10,6 @@ import java.util.Map;
 
 public class SeaPortLinesParser {
     private static final String DELIMITER = "\\s+";
-    private static final String REGEXP_FOR_SHIP_FILE_LINE = "SHIP\\s+(LOAD|UNLOAD)";
 
     public Map<SeaPortParameters, Integer> receiveSeaPortParameters(List<String> fileLines) {
         Integer pierNumber = Integer.parseInt(fileLines.get(0).split(DELIMITER)[1]);
@@ -25,13 +24,11 @@ public class SeaPortLinesParser {
 
     public List<Ship> receiveShips(List<String> fileLines) {
         List<Ship> ships = new ArrayList<>();
-        fileLines.stream()
-                .filter(s -> s.matches(REGEXP_FOR_SHIP_FILE_LINE))
-                .forEach(s -> {
-                    String taskTypeValue = s.split(DELIMITER)[1];
-                    Ship.TaskType taskType = Ship.TaskType.valueOf(taskTypeValue);
-                    ships.add(new Ship(taskType));
-                });
+        fileLines.forEach(s -> {
+            String taskTypeValue = s.split(DELIMITER)[1];
+            Ship.TaskType taskType = Ship.TaskType.valueOf(taskTypeValue);
+            ships.add(new Ship(taskType));
+        });
         return ships;
     }
 }

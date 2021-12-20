@@ -15,9 +15,9 @@ import java.util.List;
 
 public class SeaPortFileReader {
     private static final Logger logger = LogManager.getLogger();
+    private final SeaPortFileValidator seaPortFileValidator = new SeaPortFileValidatorImpl();
 
     public List<String> readSeaPortFile(String filePath) throws SeaPortException {
-        SeaPortFileValidator seaPortFileValidator = new SeaPortFileValidatorImpl();
         if (!seaPortFileValidator.isFileValid(filePath)) {
             throw new SeaPortException("Invalid file path");
         }
@@ -25,6 +25,23 @@ public class SeaPortFileReader {
         try {
             List<String> fileLines = Files.readAllLines(path);
             if (!seaPortFileValidator.areFileLinesValid(fileLines)) {
+                throw new SeaPortException("Invalid file lines");
+            }
+            logger.log(Level.INFO, "File lines read successfully");
+            return fileLines;
+        } catch (IOException e) {
+            throw new SeaPortException("Can't read file: " + filePath, e);
+        }
+    }
+
+    public List<String> readShipsFile(String filePath) throws SeaPortException {
+        if (!seaPortFileValidator.isFileValid(filePath)) {
+            throw new SeaPortException("Invalid file path");
+        }
+        Path path = Paths.get(filePath);
+        try {
+            List<String> fileLines = Files.readAllLines(path);
+            if (!seaPortFileValidator.areShipFileLinesValid(fileLines)) {
                 throw new SeaPortException("Invalid file lines");
             }
             logger.log(Level.INFO, "File lines read successfully");

@@ -6,4 +6,6 @@ public interface SeaPortFileValidator {
     boolean isFileValid(String filePath);
 
     boolean areFileLinesValid(List<String> fileLines);
+
+    boolean areShipFileLinesValid(List<String> fileLines);
 }
