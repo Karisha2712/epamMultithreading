@@ -2,8 +2,8 @@ package edu.radyuk.multithreading._main;
 
 import edu.radyuk.multithreading.entity.Ship;
 import edu.radyuk.multithreading.exception.SeaPortException;
-import edu.radyuk.multithreading.parser.SeaPortLinesParser;
-import edu.radyuk.multithreading.reader.SeaPortFileReader;
+import edu.radyuk.multithreading.parser.ShipFileLinesParser;
+import edu.radyuk.multithreading.reader.ShipsFileReader;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -22,8 +22,8 @@ public class Main {
         URL fileUrl = Main.class.getClassLoader().getResource(FILE_PATH);
         File file = new File(fileUrl.getFile());
         String filePath = file.getAbsolutePath();
-        SeaPortFileReader reader = new SeaPortFileReader();
-        SeaPortLinesParser parser = new SeaPortLinesParser();
+        ShipsFileReader reader = new ShipsFileReader();
+        ShipFileLinesParser parser = new ShipFileLinesParser();
         try {
             List<Ship> ships;
             List<String> fileLines = reader.readShipsFile(filePath);

@@ -75,4 +75,5 @@ public class Ship implements Runnable {
     public enum TaskState {
         BEFORE_START, IN_PROGRESS, COMPLETE
     }
+
 }

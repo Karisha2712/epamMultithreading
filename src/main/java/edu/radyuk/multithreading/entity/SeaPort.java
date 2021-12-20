@@ -1,19 +1,14 @@
 package edu.radyuk.multithreading.entity;
 
-import edu.radyuk.multithreading._main.Main;
-import edu.radyuk.multithreading.exception.SeaPortException;
-import edu.radyuk.multithreading.parser.SeaPortLinesParser;
-import edu.radyuk.multithreading.reader.SeaPortFileReader;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.io.File;
-import java.net.URL;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayDeque;
 import java.util.Deque;
-import java.util.List;
-import java.util.Map;
+import java.util.Properties;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
@@ -23,7 +18,6 @@ public class SeaPort {
     private static final String FILE_PATH = "files/seaport.txt";
     private static final ReentrantLock lock = new ReentrantLock();
     private static final AtomicBoolean created = new AtomicBoolean(false);
-    private static int STORAGE_CAPACITY;
     private static SeaPort instance;
     private final ReentrantLock storageLock = new ReentrantLock(true);
     private final ReentrantLock pierLock = new ReentrantLock(true);
@@ -32,23 +26,27 @@ public class SeaPort {
     private final Condition unloadAvailable = storageLock.newCondition();
     private final Deque<Pier> freePiers;
     private final Deque<Pier> busyPiers;
+    private final int storageCapacity;
+    private final int pierNumber;
     private int currentContainerNumber;
 
-    private SeaPort() throws SeaPortException {
-        URL fileUrl = Main.class.getClassLoader().getResource(FILE_PATH);
-        File file = new File(fileUrl.getFile());
-        String filePath = file.getAbsolutePath();
-        SeaPortFileReader reader = new SeaPortFileReader();
-        SeaPortLinesParser parser = new SeaPortLinesParser();
-        int pierNumber;
-        List<String> fileLines = reader.readSeaPortFile(filePath);
-        Map<SeaPortParameters, Integer> seaPortParameters = parser.receiveSeaPortParameters(fileLines);
-        STORAGE_CAPACITY = seaPortParameters.get(SeaPortParameters.CAPACITY);
-        pierNumber = seaPortParameters.get(SeaPortParameters.PIER_NUM);
-        currentContainerNumber = seaPortParameters.get(SeaPortParameters.CONTAINERS);
+    private SeaPort() {
+        InputStream propertyFileStream = getClass().getClassLoader().getResourceAsStream(FILE_PATH);
+        Properties properties = new Properties();
+        try {
+            properties.load(propertyFileStream);
+        } catch (IOException e) {
+            logger.log(Level.ERROR, "Input stream is invalid");
+        }
+        String capacity = properties.getProperty(SeaPortParameter.CAPACITY.toString());
+        String pierNum = properties.getProperty(SeaPortParameter.PIER_NUM.toString());
+        String containerNumber = properties.getProperty(SeaPortParameter.CONTAINERS.toString());
+        storageCapacity = Integer.parseInt(capacity);
+        this.pierNumber = Integer.parseInt(pierNum);
+        currentContainerNumber = Integer.parseInt(containerNumber);
         freePiers = new ArrayDeque<>();
         busyPiers = new ArrayDeque<>();
-        for (int i = 0; i < pierNumber; i++) {
+        for (int i = 0; i < this.pierNumber; i++) {
             freePiers.addLast(new Pier());
         }
     }
@@ -61,13 +59,23 @@ public class SeaPort {
                     instance = new SeaPort();
                     created.set(true);
                 }
-            } catch (SeaPortException e) {
-                e.printStackTrace();
             } finally {
                 lock.unlock();
             }
         }
         return instance;
+    }
+
+    public int getPierNumber() {
+        return pierNumber;
+    }
+
+    public int getStorageCapacity() {
+        return storageCapacity;
+    }
+
+    public int getCurrentContainerNumber() {
+        return currentContainerNumber;
     }
 
     public Pier obtainPier() {
@@ -104,7 +112,7 @@ public class SeaPort {
         try {
             storageLock.lock();
             try {
-                while (currentContainerNumber == STORAGE_CAPACITY) {
+                while (currentContainerNumber == storageCapacity) {
                     loadAvailable.await();
                 }
             } catch (InterruptedException e) {

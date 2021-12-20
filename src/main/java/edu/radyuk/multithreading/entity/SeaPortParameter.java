@@ -1,6 +1,6 @@
 package edu.radyuk.multithreading.entity;
 
-public enum SeaPortParameters {
+public enum SeaPortParameter {
     PIER_NUM,
     CAPACITY,
     CONTAINERS
