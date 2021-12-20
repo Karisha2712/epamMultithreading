@@ -1,6 +1,6 @@
-package edu.radyuk.muitithreading.entity;
+package edu.radyuk.multithreading.entity;
 
-import edu.radyuk.muitithreading.util.ShipIdGenerator;
+import edu.radyuk.multithreading.util.ShipIdGenerator;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

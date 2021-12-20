@@ -1,4 +1,4 @@
-package edu.radyuk.muitithreading.util;
+package edu.radyuk.multithreading.util;
 
 public class PierIdGenerator {
     private static int count;

@@ -1,4 +1,4 @@
-package edu.radyuk.muitithreading.entity;
+package edu.radyuk.multithreading.entity;
 
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;

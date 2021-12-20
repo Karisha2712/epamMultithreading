@@ -1,6 +1,6 @@
-package edu.radyuk.muitithreading._main;
+package edu.radyuk.multithreading._main;
 
-import edu.radyuk.muitithreading.entity.Ship;
+import edu.radyuk.multithreading.entity.Ship;
 
 import java.util.ArrayList;
 import java.util.List;

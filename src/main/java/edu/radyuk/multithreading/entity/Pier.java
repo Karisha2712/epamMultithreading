@@ -1,6 +1,6 @@
-package edu.radyuk.muitithreading.entity;
+package edu.radyuk.multithreading.entity;
 
-import edu.radyuk.muitithreading.util.PierIdGenerator;
+import edu.radyuk.multithreading.util.PierIdGenerator;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
