@@ -10,12 +10,12 @@ public class SeaPortException extends Exception {
         super(message);
     }
 
-    public SeaPortException(Exception cause) {
-        super(cause);
+    public SeaPortException(String message, Throwable cause) {
+        super(message, cause);
     }
 
-    public SeaPortException(Exception cause, String message) {
-        super(message, cause);
+    public SeaPortException(Throwable cause) {
+        super(cause);
     }
 
 }

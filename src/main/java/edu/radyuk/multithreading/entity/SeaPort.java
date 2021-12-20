@@ -24,7 +24,7 @@ public class SeaPort {
     private final Condition unloadAvailable = storageLock.newCondition();
     private final Deque<Pier> freePiers;
     private final Deque<Pier> busyPiers;
-    private int currentContainerNumber = 0;
+    private int currentContainerNumber = 500;
 
     private SeaPort() {
         freePiers = new ArrayDeque<>();
